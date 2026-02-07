@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
+import { Admin } from 'src/admin/entities/admin.entity';
 const globalEnvs = dotenv.config({
   path: `.env.${process.env.NODE_ENV || 'development'}`,
 }).parsed;
@@ -19,7 +20,7 @@ export const typeORMConfigurations: TypeOrmModuleOptions = {
   username: globalEnvs.DATABASE_USERNAME,
   password: globalEnvs.DATABASE_PASSWORD,
   database: globalEnvs.DATABASE_NAME,
-  entities: [],
-  synchronize: false, // Always false in production
+  entities: [Admin],
+  synchronize: false,
 };
 export default () => configurations;
