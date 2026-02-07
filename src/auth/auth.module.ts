@@ -4,8 +4,8 @@ import { UserAuthService } from './auth.user.service';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AdminModule } from 'src/admin/admin.module';
-import { Admin } from 'src/admin/entities/admin.entity';
+import { AdminModule } from '../admin/admin.module';
+import { Admin } from '../admin/entities/admin.entity';
 @Module({
   controllers: [UserAuthController],
   providers: [UserAuthService],

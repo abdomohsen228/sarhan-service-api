@@ -41,12 +41,12 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const userPayload = await this.jwtService.verifyAsync(token, {
+      const adminPayload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_SECRET_KEY'),
       });
 
       const admin = await this.adminRepository.findOne({
-        where: { id: userPayload.id },
+        where: { id: adminPayload.id },
       });
 
       if (!admin) {
@@ -54,13 +54,13 @@ export class AuthGuard implements CanActivate {
           'Admin not found or unauthorized access',
         );
       }
-      if (userPayload.tokenVersion !== admin.tokenVersion) {
+      if (adminPayload.tokenVersion !== admin.tokenVersion) {
         throw new UnauthorizedException(
           'Token version mismatch. Please log in again.',
         );
       }
 
-      req['admin'] = admin;
+      req['user'] = admin;
       return true;
     } catch (error) {
       // Log error for debugging while keeping user-facing message generic
