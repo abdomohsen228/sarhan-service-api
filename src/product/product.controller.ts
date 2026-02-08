@@ -1,11 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
   Post,
+  Put,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -28,22 +31,15 @@ import { AuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MulterFileSystemStorage } from 'src/config/multer-storageConfig';
 import { CreateCategoryRequestDto } from './dtos/request/create-category-request.dto';
 import { GetProductByIdResponseDto } from './dtos/response/get-product-byId.response';
+import { ProductFilterDto } from './dtos/request/products-query-filter.dto';
+import { PaginatedProductsResponseDto } from './dtos/response/paginated-product.dto';
 
 @ApiTags('Product Management')
 @ApiBearerAuth()
-@Controller('products')
+@Controller('')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
-  // get all products with pagination and filtering with category, origin, growing method, storage type, shelf life, harvest time, health benefits, calories level, vitamins, and packing options
-  // get all products with pagination and filtering without category
-  // get product by id
-  // update product by id
-  // delete product by id
-  // get all categories
-  // get category by id
-  // update category by id
-  // delete category by id
-  @Get(':productId')
+  @Get('products/:productId')
   @ApiOperation({ summary: 'Get product by ID' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -56,7 +52,104 @@ export class ProductController {
     return this.productService.getProductById(productId);
   }
 
-  @Post()
+  @Get('categories/:categoryName/products')
+  @ApiOperation({ summary: 'Get products by category name' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Products retrieved successfully',
+    type: PaginatedProductsResponseDto,
+  })
+  public async getProductsByCategoryName(
+    @Param('categoryName') categoryName: string,
+    @Query() filterDto: ProductFilterDto,
+  ): Promise<PaginatedProductsResponseDto> {
+    return this.productService.getProductsByCategoryName(
+      categoryName,
+      filterDto,
+    );
+  }
+
+  @Put('products/:productId')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FilesInterceptor(
+      'images',
+      3,
+      MulterFileSystemStorage.getStorageConfig('products', 3),
+    ),
+  )
+  @ApiOperation({ summary: 'Create a new product' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Product created successfully',
+    type: String,
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        description: { type: 'string' },
+        categoryId: { type: 'number' },
+
+        origin: { type: 'string' },
+        growingMethod: { type: 'string' },
+        storage: { type: 'string' },
+        shelfLife: { type: 'string' },
+        harvestTime: { type: 'string' },
+
+        healthBenefits: {
+          type: 'array',
+          items: { type: 'string' },
+        },
+        caloriesLevel: { type: 'string' },
+        vitamins: {
+          type: 'array',
+          items: { type: 'string' },
+        },
+        packingOptions: {
+          type: 'array',
+          items: { type: 'string' },
+        },
+
+        images: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    },
+  })
+  async updateProduct(
+    @CurrentUser() userPayload: JwtPayload,
+    @Param('productId') productId: number,
+    @Body() updateProductRequestDto: CreateProductRequestDto,
+    @UploadedFiles() uploadUserDetailsImages: Array<Express.Multer.File>,
+  ): Promise<string> {
+    return this.productService.updateProductById(
+      productId,
+      updateProductRequestDto,
+      uploadUserDetailsImages,
+    );
+  }
+  @Get('products')
+  @ApiOperation({ summary: 'Get all products' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Products retrieved successfully',
+    type: PaginatedProductsResponseDto,
+  })
+  public async getAllProducts(
+    @Query() filterDto: ProductFilterDto,
+  ): Promise<PaginatedProductsResponseDto> {
+    return this.productService.getAllProducts(filterDto);
+  }
+
+  @Post('products')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @ApiConsumes('multipart/form-data')
@@ -121,6 +214,21 @@ export class ProductController {
       createProductRequestDto,
       uploadUserDetailsImages,
     );
+  }
+  @Delete('products/:productId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Delete a product by ID' })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Product deleted successfully',
+    type: String,
+  })
+  public async deleteProduct(
+    @CurrentUser() userPayload: JwtPayload,
+    @Param('productId') productId: number,
+  ): Promise<string> {
+    return await this.productService.deleteProductById(productId);
   }
 
   @Post('categories')

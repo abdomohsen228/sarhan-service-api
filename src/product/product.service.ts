@@ -14,6 +14,8 @@ import { Product } from './entities/product.entity';
 import { Category } from './entities/category.entity';
 import { CreateCategoryRequestDto } from './dtos/request/create-category-request.dto';
 import { GetProductByIdResponseDto } from './dtos/response/get-product-byId.response';
+import { ProductFilterDto } from './dtos/request/products-query-filter.dto';
+import { PaginatedProductsResponseDto } from './dtos/response/paginated-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -98,6 +100,96 @@ export class ProductService {
     const category = this.categoryRepository.create(createCategoryRequestDto);
     await this.categoryRepository.save(category);
     return 'Category created successfully';
+  }
+  public async updateProductById(
+    productId: number,
+    updateProductRequestDto: CreateProductRequestDto,
+    @UploadedFiles() images: Array<Express.Multer.File>,
+  ): Promise<string> {
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+    if (!product) {
+      throw new BadRequestException(
+        `Product with ID ${productId} not found. Please provide a valid product ID.`,
+      );
+    }
+    if (!images || images.length === 0) {
+      throw new BadRequestException(
+        'At least one product image is required. Please upload at least one image of the product.',
+      );
+    }
+    const userImagesUploadUrls = this.validateAndBuildImageUrls(images);
+    Object.assign(product, updateProductRequestDto, {
+      imageUrls: userImagesUploadUrls,
+    });
+    await this.productRepository.save(product);
+    return 'Product updated successfully';
+  }
+  public async deleteProductById(productId: number): Promise<string> {
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+    if (!product) {
+      throw new BadRequestException(
+        `Product with ID ${productId} not found. Please provide a valid product ID.`,
+      );
+    }
+    await this.productRepository.remove(product);
+    return 'Product deleted successfully';
+  }
+  public async getProductsByCategoryName(
+    categoryName: string,
+    { page = 1, limit = 10 }: ProductFilterDto,
+  ): Promise<PaginatedProductsResponseDto> {
+    const category = await this.categoryRepository.findOne({
+      where: { name: categoryName },
+    });
+    if (!category) {
+      throw new BadRequestException(
+        `Category with name "${categoryName}" not found. Please provide a valid category name.`,
+      );
+    }
+    const products = await this.productRepository.findAndCount({
+      where: { categoryId: category.id },
+      order: { id: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+      relations: ['category'],
+    });
+    const responseProducts = products[0].map((product) => {
+      const response = new GetProductByIdResponseDto();
+      Object.assign(response, product);
+      return response;
+    });
+    return {
+      page,
+      limit,
+      total: products[1],
+      products: responseProducts,
+    };
+  }
+  public async getAllProducts(
+    filterDto: ProductFilterDto,
+  ): Promise<PaginatedProductsResponseDto> {
+    const { page = 1, limit = 10 } = filterDto;
+    const [products, total] = await this.productRepository.findAndCount({
+      order: { id: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+      relations: ['category'],
+    });
+    const responseProducts = products.map((product) => {
+      const response = new GetProductByIdResponseDto();
+      Object.assign(response, product);
+      return response;
+    });
+    return {
+      page,
+      limit,
+      total,
+      products: responseProducts,
+    };
   }
   private validateAndBuildImageUrls(imageFiles: UploadedImageFile[]): string[] {
     return imageFiles.map((file) => {
