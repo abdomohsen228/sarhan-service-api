@@ -63,7 +63,6 @@ export class AuthGuard implements CanActivate {
       req['user'] = admin;
       return true;
     } catch (error) {
-      // Log error for debugging while keeping user-facing message generic
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       const errorDetails =

@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import configuration, { typeORMConfigurations } from './config/configuration';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AdminModule } from './admin/admin.module';
     TypeOrmModule.forRoot(typeORMConfigurations),
     AuthModule,
     AdminModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
