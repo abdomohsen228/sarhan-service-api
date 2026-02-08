@@ -12,7 +12,7 @@ import { ImageUploadRequest } from './interfaces/image-upload-request.interface'
 
 export class MulterFileSystemStorage {
   static getStorageConfig(
-    uploadType: 'places' | 'userIds',
+    uploadType: 'products' | 'userIds',
     maxFileCount: number = 5,
   ) {
     return {
@@ -22,23 +22,44 @@ export class MulterFileSystemStorage {
           imageUploadfile,
           diskStorageCallback,
         ) => {
-          const userIdFromParams = imageUploadRequest.params['id'];
-          imageUploadRequest.uploadUserId = userIdFromParams;
-
           const userBaseDirectory =
-            uploadType === 'places' ? 'places' : 'userIds';
-          const userUploadsDirectory = path.join(
-            __dirname,
-            '..',
-            '..',
-            'uploads',
-            userBaseDirectory,
-            `user_${userIdFromParams}`,
-          );
+            uploadType === 'products' ? 'products' : 'userIds';
 
-          fs.mkdirSync(userUploadsDirectory, { recursive: true });
-          diskStorageCallback(null, userUploadsDirectory);
+          let uploadsDirectory: string;
+
+          if (uploadType === 'products') {
+            uploadsDirectory = path.join(
+              __dirname,
+              '..',
+              '..',
+              'uploads',
+              userBaseDirectory,
+            );
+            imageUploadRequest.uploadUserId = undefined;
+            imageUploadfile['userFolder'] = undefined;
+          } else {
+            const userIdFromParams = imageUploadRequest.params['id'];
+            imageUploadRequest.uploadUserId = Array.isArray(userIdFromParams)
+              ? userIdFromParams[0]
+              : userIdFromParams || 'default';
+
+            const userFolderName = `user_${userIdFromParams}`;
+            imageUploadfile['userFolder'] = userFolderName;
+
+            uploadsDirectory = path.join(
+              __dirname,
+              '..',
+              '..',
+              'uploads',
+              userBaseDirectory,
+              userFolderName,
+            );
+          }
+
+          fs.mkdirSync(uploadsDirectory, { recursive: true });
+          diskStorageCallback(null, uploadsDirectory);
         },
+
         filename: (
           imageUploadRequest: ImageUploadRequest,
           fileUploadRequest,

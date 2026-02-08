@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import { getCorsConfig } from './config/corsConfig';
 import validationPipeConfig from './config/pipesConfig';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -15,6 +16,10 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe(validationPipeConfig));
 
   app.enableCors(getCorsConfig(configService));
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/',
+  });
+
   const config = new DocumentBuilder()
     .setTitle('Sarhan Service API')
     .setDescription('API documentation for Sarhan Service')

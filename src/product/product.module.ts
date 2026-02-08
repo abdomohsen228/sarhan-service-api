@@ -6,12 +6,14 @@ import { AdminModule } from '../admin/admin.module';
 import { Admin } from '../admin/entities/admin.entity';
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
+import { Product } from './entities/product.entity';
+import { Category } from './entities/category.entity';
 @Module({
   controllers: [ProductController],
   providers: [ProductService],
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([Admin]),
+    TypeOrmModule.forFeature([Admin, Product, Category]),
     JwtModule.registerAsync({
       inject: [ConfigService],
       imports: [ConfigModule],
