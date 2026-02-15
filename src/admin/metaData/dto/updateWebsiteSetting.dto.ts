@@ -15,7 +15,7 @@ export class UpdateWebsiteSettingsDto {
   })
   @IsOptional()
   @IsString()
-  slogan?: string;
+  slogan?: string | null;
 
   @ApiPropertyOptional({
     example: ['+20123456789', '+20198765432'],
@@ -25,7 +25,7 @@ export class UpdateWebsiteSettingsDto {
   @IsOptional()
   @IsArray()
   @IsPhoneNumber(null, { each: true })
-  phoneNumbers?: string[];
+  phoneNumbers?: string[] | null;
 
   @ApiPropertyOptional({
     example: ['info@company.com', 'sales@company.com'],
@@ -35,7 +35,7 @@ export class UpdateWebsiteSettingsDto {
   @IsOptional()
   @IsArray()
   @IsEmail({}, { each: true })
-  emails?: string[];
+  emails?: string[] | null;
 
   @ApiPropertyOptional({
     example: 'Cairo, Egypt',
@@ -43,7 +43,7 @@ export class UpdateWebsiteSettingsDto {
   })
   @IsOptional()
   @IsString()
-  address?: string;
+  address?: string | null;
 
   @ApiPropertyOptional({
     example: 'https://wa.me/20123456789',
@@ -51,40 +51,40 @@ export class UpdateWebsiteSettingsDto {
   })
   @IsOptional()
   @IsUrl()
-  whatsAppLink?: string;
+  whatsAppLink?: string | null;
 
   @ApiPropertyOptional({
     example: 'https://facebook.com/company',
   })
   @IsOptional()
   @IsUrl()
-  facebookUrl?: string;
+  facebookUrl?: string | null;
 
   @ApiPropertyOptional({
     example: 'https://instagram.com/company',
   })
   @IsOptional()
   @IsUrl()
-  instagramUrl?: string;
+  instagramUrl?: string | null;
 
   @ApiPropertyOptional({
     example: 'https://twitter.com/company',
   })
   @IsOptional()
   @IsUrl()
-  twitterUrl?: string;
+  twitterUrl?: string | null;
 
   @ApiPropertyOptional({
     example: 'https://linkedin.com/company',
   })
   @IsOptional()
   @IsUrl()
-  linkedinUrl?: string;
+  linkedinUrl?: string | null;
 
   @ApiPropertyOptional({
     example: 'https://youtube.com/@company',
   })
   @IsOptional()
   @IsUrl()
-  youtubeUrl?: string;
+  youtubeUrl?: string | null;
 }
