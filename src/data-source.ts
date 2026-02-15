@@ -41,7 +41,7 @@ export default new DataSource({
   username: getEnv('DATABASE_USERNAME', true),
   password: getEnv('DATABASE_PASSWORD', true),
   database: getEnv('DATABASE_NAME', true),
-  entities: ['src/**/entities/*.ts'],
+  entities: ['src/**/*.entity.ts'],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
 });
