@@ -4,11 +4,11 @@ import { UserAuthService } from './auth.user.service';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AdminModule } from '../admin/admin.module';
 import { Admin } from '../admin/entities/admin.entity';
+import { AuthGuard } from './guards/jwt-auth.guard';
 @Module({
   controllers: [UserAuthController],
-  providers: [UserAuthService],
+  providers: [UserAuthService, AuthGuard],
   imports: [
     ConfigModule,
     TypeOrmModule.forFeature([Admin]),
@@ -24,8 +24,7 @@ import { Admin } from '../admin/entities/admin.entity';
         };
       },
     }),
-    AdminModule,
   ],
-  exports: [JwtModule],
+  exports: [JwtModule, AuthGuard],
 })
 export class AuthModule {}

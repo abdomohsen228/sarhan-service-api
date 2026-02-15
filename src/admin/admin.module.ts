@@ -6,6 +6,7 @@ import { Admin } from './entities/admin.entity';
 import { WebsiteSettingsService } from './metaData/website_settings.service';
 import { WebsiteSettings } from './metaData/website-settings.entity';
 import { WebsiteSettingsController } from './metaData/website_settings.controller';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   providers: [WebsiteSettingsService],
@@ -25,6 +26,7 @@ import { WebsiteSettingsController } from './metaData/website_settings.controlle
         };
       },
     }),
+    AuthModule,
   ],
 })
 export class AdminModule {}

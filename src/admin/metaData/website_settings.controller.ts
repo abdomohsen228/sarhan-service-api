@@ -7,11 +7,20 @@ import { GetWebsiteSettingResponseDto } from './dto/getWebsiteSetting.dto';
 
 @ApiTags('Website Settings')
 @UseGuards(AuthGuard)
-@Controller('')
+@Controller('website-settings')
 export class WebsiteSettingsController {
   constructor(
     private readonly websiteSettingsService: WebsiteSettingsService,
   ) {}
+  @Get()
+  @ApiOperation({ summary: 'Get main website settings' })
+  @ApiOkResponse({
+    description: 'Website settings retrieved successfully',
+    type: GetWebsiteSettingResponseDto,
+  })
+  public async getWebsiteSettings(): Promise<GetWebsiteSettingResponseDto> {
+    return this.websiteSettingsService.getSettings();
+  }
 
   @Put()
   @ApiOperation({ summary: 'Update main website settings' })
@@ -24,15 +33,5 @@ export class WebsiteSettingsController {
     @Body() dto: UpdateWebsiteSettingsDto,
   ): Promise<GetWebsiteSettingResponseDto> {
     return this.websiteSettingsService.update(dto);
-  }
-
-  @Get()
-  @ApiOperation({ summary: 'Get main website settings' })
-  @ApiOkResponse({
-    description: 'Website settings retrieved successfully',
-    type: GetWebsiteSettingResponseDto,
-  })
-  public async getWebsiteSettings(): Promise<GetWebsiteSettingResponseDto> {
-    return this.websiteSettingsService.getSettings();
   }
 }
