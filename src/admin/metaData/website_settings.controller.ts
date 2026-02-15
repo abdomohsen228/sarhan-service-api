@@ -6,13 +6,12 @@ import { UpdateWebsiteSettingsDto } from './dto/updateWebsiteSetting.dto';
 import { GetWebsiteSettingResponseDto } from './dto/getWebsiteSetting.dto';
 
 @ApiTags('Website Settings')
-@UseGuards(AuthGuard)
-@Controller('website-settings')
+@Controller('')
 export class WebsiteSettingsController {
   constructor(
     private readonly websiteSettingsService: WebsiteSettingsService,
   ) {}
-  @Get()
+  @Get('website-settings')
   @ApiOperation({ summary: 'Get main website settings' })
   @ApiOkResponse({
     description: 'Website settings retrieved successfully',
@@ -22,7 +21,8 @@ export class WebsiteSettingsController {
     return this.websiteSettingsService.getSettings();
   }
 
-  @Put()
+  @Put('admin/website-settings')
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Update main website settings' })
   @ApiBody({ type: UpdateWebsiteSettingsDto })
   @ApiOkResponse({

@@ -39,6 +39,19 @@ import { PaginatedProductsResponseDto } from './dtos/response/paginated-product.
 @Controller('')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
+  @Get('admin/products/:productId')
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get product by ID' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Product retrieved successfully',
+    type: GetProductByIdResponseDto,
+  })
+  public async adminGetProductById(
+    @Param('productId') productId: number,
+  ): Promise<GetProductByIdResponseDto> {
+    return this.productService.getProductById(productId);
+  }
   @Get('products/:productId')
   @ApiOperation({ summary: 'Get product by ID' })
   @ApiResponse({
@@ -69,7 +82,7 @@ export class ProductController {
     );
   }
 
-  @Put('products/:productId')
+  @Put('admin/products/:productId')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @ApiConsumes('multipart/form-data')
@@ -149,7 +162,7 @@ export class ProductController {
     return this.productService.getAllProducts(filterDto);
   }
 
-  @Post('products')
+  @Post('admin/products')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @ApiConsumes('multipart/form-data')
@@ -215,7 +228,7 @@ export class ProductController {
       uploadUserDetailsImages,
     );
   }
-  @Delete('products/:productId')
+  @Delete('admin/products/:productId')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Delete a product by ID' })
@@ -231,7 +244,7 @@ export class ProductController {
     return await this.productService.deleteProductById(productId);
   }
 
-  @Post('categories')
+  @Post('admin/categories')
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiBody({ type: CreateCategoryRequestDto })
