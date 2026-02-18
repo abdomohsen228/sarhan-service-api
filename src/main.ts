@@ -8,12 +8,15 @@ import { Logger } from '@nestjs/common';
 import { getCorsConfig } from './config/corsConfig';
 import validationPipeConfig from './config/pipesConfig';
 import { join } from 'path';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
   const logger = new Logger('Bootstrap');
   app.useGlobalPipes(new ValidationPipe(validationPipeConfig));
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ limit: '50mb', extended: true }));
 
   app.enableCors(getCorsConfig(configService));
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
