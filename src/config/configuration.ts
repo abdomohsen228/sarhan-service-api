@@ -4,6 +4,7 @@ import { Admin } from '../admin/entities/admin.entity';
 import { Category } from '../product/entities/category.entity';
 import { Product } from '../product/entities/product.entity';
 import { WebsiteSettings } from '../admin/metaData/website-settings.entity';
+import { News } from '../news/entities/news.entity';
 const globalEnvs = dotenv.config({
   path: `.env.${process.env.NODE_ENV || 'development'}`,
 }).parsed;
@@ -23,7 +24,7 @@ export const typeORMConfigurations: TypeOrmModuleOptions = {
   username: globalEnvs.DATABASE_USERNAME,
   password: globalEnvs.DATABASE_PASSWORD,
   database: globalEnvs.DATABASE_NAME,
-  entities: [Admin, Category, Product, WebsiteSettings],
+  entities: [Admin, Category, Product, WebsiteSettings, News],
   synchronize: false,
 };
 export default () => configurations;

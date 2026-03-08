@@ -16,7 +16,10 @@ import { NewsModule } from './news/news.module';
       isGlobal: true,
       load: [configuration],
     }),
-    TypeOrmModule.forRoot(typeORMConfigurations),
+    TypeOrmModule.forRoot({
+      ...typeORMConfigurations,
+      autoLoadEntities: true,
+    }),
     AuthModule,
     AdminModule,
     ProductModule,

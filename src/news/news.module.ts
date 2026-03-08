@@ -3,9 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Admin } from '../admin/entities/admin.entity';
-import { News } from './entities/news.entity';
 import { NewsService } from './news.service';
 import { NewsController } from './news.controller';
+import { News } from './entities/news.entity';
 
 @Module({
   controllers: [NewsController],
@@ -29,4 +29,3 @@ import { NewsController } from './news.controller';
   exports: [JwtModule],
 })
 export class NewsModule {}
-
